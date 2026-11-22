@@ -1,0 +1,6 @@
+{
+  "name": "harness-sdlc",
+  "version": "0.1.0",
+  "description": "SDLC guardrails: EARS requirements (cc-sdd companion), Architecture Decision Records, and hooks that enforce them in projects containing a .harness marker file.",
+  "keywords": ["sdlc", "ears", "adr", "cc-sdd", "superpowers", "tdd"]
+}

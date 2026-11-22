@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "harness",
+  "description": "Personal SDLC harness for Claude Code: EARS specs, ADRs and guardrail hooks.",
+  "owner": { "name": "sdlc-harness" },
+  "plugins": [
+    {
+      "name": "harness-sdlc",
+      "source": "./plugins/harness-sdlc",
+      "description": "EARS requirements and ADR skills, plus hooks that enforce them in projects marked with a .harness file.",
+      "category": "development"
+    }
+  ]
+}

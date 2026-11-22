@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "extraKnownMarketplaces": {
+    "android-skills": {
+      "source": { "source": "github", "repo": "android/skills" }
+    },
+    "android-cli-plugin": {
+      "source": { "source": "github", "repo": "android/android-cli-plugin" }
+    }
+  },
+  "enabledPlugins": {
+    "android-skills@android-skills": true,
+    "android-cli@android-cli-plugin": true,
+    "harness-sdlc@harness": true,
+    "superpowers@claude-plugins-official": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew test:*)",
+      "Bash(./gradlew lint:*)",
+      "Bash(./gradlew assembleDebug:*)",
+      "Bash(./gradlew tasks:*)"
+    ]
+  }
+}
