@@ -20,7 +20,7 @@ while IFS= read -r p; do
     docs/adr/*.md) adr_touched=1; continue ;;
   esac
   case "$(basename "$p")" in
-    Package.swift|*.pbxproj|Podfile|Cartfile|build.gradle|build.gradle.kts|settings.gradle|settings.gradle.kts|libs.versions.toml|package.json)
+    Package.swift|project.xcproj|project.pbxproj|Podfile|Cartfile|build.gradle|build.gradle.kts|settings.gradle|settings.gradle.kts|libs.versions.toml|package.json)
       manifests="${manifests}${manifests:+, }${p}" ;;
   esac
 done <<< "$changed"

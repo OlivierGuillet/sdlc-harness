@@ -40,7 +40,7 @@ These rules apply to every project. Project `CLAUDE.md` files may add to them.
 - In a `.harness` project:
   - code edits are refused until superpowers is enabled and `docs/specs/` contains an EARS requirement;
   - spec files with non-EARS acceptance criteria are rejected right after writing;
-  - a turn cannot end with changed build manifests (`Package.swift`, `*.pbxproj`, Gradle files, `package.json`, …) and no new or updated ADR.
+  - a turn cannot end with changed build manifests (`Package.swift`, `project.xcproj` (Xcode 27+), `project.pbxproj` (legacy), Gradle files, `package.json`, …) and no new or updated ADR.
 - When a hook blocks, fix the cause (write the spec, the ADR, the EARS sentence). Never work around a hook or disable it without asking me.
 
 ## General

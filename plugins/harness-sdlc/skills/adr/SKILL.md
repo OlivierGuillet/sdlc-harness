@@ -1,6 +1,6 @@
 ---
 name: adr
-description: Write and maintain Architecture Decision Records in docs/adr/. Use when a change adds, removes or upgrades a dependency, alters build or project configuration (Package.swift, *.pbxproj, Podfile, Gradle files, version catalogs, package.json), introduces a new module or layer, picks between technical alternatives, or when the harness require-adr hook blocks the end of a turn.
+description: Write and maintain Architecture Decision Records in docs/adr/. Use when a change adds, removes or upgrades a dependency, alters build or project configuration (Package.swift, project.xcproj or legacy project.pbxproj, Podfile, Gradle files, version catalogs, package.json), introduces a new module or layer, picks between technical alternatives, or when the harness require-adr hook blocks the end of a turn.
 when_to_use: '"record a decision", "ADR", "why did we choose", "require-adr blocked", adding a library, changing architecture, superseding a previous decision.'
 ---
 
@@ -20,7 +20,7 @@ ADRs live in `docs/adr/NNNN-kebab-case-title.md`, one decision per file, using
   question.
 
 In projects with a `.harness` marker, the `require-adr` Stop hook blocks the end
-of a turn when a manifest (`Package.swift`, `*.pbxproj`, `Podfile`, `Cartfile`,
+of a turn when a manifest (`Package.swift`, `project.xcproj` (Xcode 27+), `project.pbxproj` (legacy), `Podfile`, `Cartfile`,
 `build.gradle*`, `settings.gradle*`, `gradle/libs.versions.toml`, `package.json`)
 has uncommitted changes and no file under `docs/adr/` was added or modified.
 A trivial patch bump still deserves a one-paragraph ADR, or an update of the ADR
