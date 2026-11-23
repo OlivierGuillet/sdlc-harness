@@ -67,6 +67,13 @@ does_not_forbid_kiro_validate() {
   ! grep -v '^|' "$p/CLAUDE.md" | grep -qF 'kiro-validate' || fail "restricts a /kiro-validate-* command the global rules allow"
 }
 
+requires_an_adr_after_discovery_and_design() {
+  local p; p="$(new_harness_project)"
+  "$INSTALL" "$p" >/dev/null || fail "installer exited $?"
+  grep -v '^|' "$p/CLAUDE.md" | grep -Eq 'After `/kiro-discovery` and after each `/kiro-spec-design`.*ADR' \
+    || fail "no rule asking for ADRs after discovery and design"
+}
+
 fails_without_harness_marker() {
   local p; p="$(new_project)"
   echo "mine" > "$p/CLAUDE.md"
@@ -109,6 +116,7 @@ run_case no_backup_when_file_is_up_to_date
 run_case backs_up_harness_file_edited_by_hand
 run_case keeps_every_backup_within_the_same_second
 run_case does_not_forbid_kiro_validate
+run_case requires_an_adr_after_discovery_and_design
 run_case fails_without_harness_marker
 run_case git_ignores_the_backup
 run_case leaves_gitignore_alone_without_backup

@@ -53,7 +53,7 @@ The plugin is installed globally, so its hooks run in every project. Each hook f
 
 | Hook | Event | Effect |
 |---|---|---|
-| `session-start.sh` | SessionStart | Signal: injects the workflow and the list of specs and ADRs; warns when cc-sdd skills or the harness `CLAUDE.md` are missing |
+| `session-start.sh` | SessionStart | Signal: injects the workflow and the list of specs and ADRs; warns when cc-sdd skills or the harness `CLAUDE.md` are missing, or when discovery or design documents exist without any ADR |
 | `require-superpowers.sh` | PreToolUse (Write/Edit) | **Blocks** code edits while `superpowers@claude-plugins-official` is not enabled |
 | `require-spec.sh` | PreToolUse (Write/Edit) | **Blocks** code edits (tests included) until `docs/specs/` holds a valid EARS criterion |
 | `lint-ears.sh` | PostToolUse (Write/Edit) | **Rejects** a `docs/specs/**.md` file whose acceptance criteria are not EARS |
@@ -104,7 +104,7 @@ Commit `.harness`, `CLAUDE.md`, `.gitignore`, `.claude/settings.json`, the cc-sd
 ## Daily workflow
 
 1. `/kiro-steering` once per project (optional), `/kiro-discovery "idea"` for each new piece of work, then for each feature `/kiro-spec-init`, `/kiro-spec-requirements` (EARS, IDs `REQ-<feature>-N.M`), design, tasks, `/kiro-validate-*`.
-2. Architecture or dependency decision: an ADR in `docs/adr/` (`adr` skill).
+2. Architecture or dependency decision: an ADR in `docs/adr/` (`adr` skill). cc-sdd never writes ADRs, so the project `CLAUDE.md` and the SessionStart hook ask for one ADR per choice made between real alternatives after `/kiro-discovery` and after each `/kiro-spec-design`. This is an instruction, not a blocking hook; the hook also warns when discovery or design documents exist and `docs/adr/` is empty.
 3. superpowers: `writing-plans` from `tasks.md`, `test-driven-development` (one failing test per requirement ID), `subagent-driven-development`, `requesting-code-review`, `verification-before-completion`.
 4. Do not use `/kiro-impl` or `/kiro-spec-batch`.
 

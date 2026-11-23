@@ -32,6 +32,7 @@ These rules apply to every project. Project `CLAUDE.md` files may add to them.
 
 - cc-sdd is installed per project with `npx cc-sdd@latest --claude-skills --kiro-dir docs`, so specs live in `docs/specs/<feature>/` and steering in `docs/steering/`.
 - Never use `/kiro-impl` or `/kiro-spec-batch`: implementation belongs to superpowers.
+- cc-sdd never writes ADRs. After `/kiro-discovery` and after each `/kiro-spec-design`, write one ADR per choice made between real alternatives (framework or library adopted or rejected, persistence, networking, concurrency model, module boundaries, minimum OS) with the `harness-sdlc:adr` skill, before ending the turn. Status stays `Proposed` until I accept it.
 - Each acceptance criterion has the ID `REQ-<feature>-<N>.<M>` (requirement N, criterion M). Every ID gets at least one test that carries it in its name, written before the code.
 
 ## Harness guardrails

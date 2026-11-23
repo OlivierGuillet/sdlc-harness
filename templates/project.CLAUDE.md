@@ -53,6 +53,13 @@ the skills it points to.
   criterion M). Every ID gets at least one test that carries it in its name,
   written before the code.
 - A change to a dependency, a build manifest or the architecture needs an ADR.
+- After `/kiro-discovery` and after each `/kiro-spec-design`, write one ADR per choice made between real alternatives
+  (framework or library adopted or rejected, persistence, networking,
+  concurrency model, module boundaries, minimum OS), with the
+  `harness-sdlc:adr` skill. cc-sdd records these choices in `roadmap.md`,
+  `brief.md` and `design.md` but never writes ADRs. Do it before ending the
+  turn, with status `Proposed` until the user accepts, and link each ADR to the
+  document that made the choice.
 - When a harness hook blocks, fix the cause (write the spec, the ADR, the EARS
   sentence). Never work around a hook.
 

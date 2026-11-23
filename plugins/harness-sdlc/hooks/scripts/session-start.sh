@@ -24,6 +24,13 @@ if [ -d "$ROOT/docs/adr" ]; then
 fi
 
 warnings=""
+decision_docs=0
+[ -f "$ROOT/docs/steering/roadmap.md" ] && decision_docs=1
+if [ "$decision_docs" -eq 0 ] && [ -d "$ROOT/docs/specs" ]; then
+  [ -n "$(find "$ROOT/docs/specs" -mindepth 2 -maxdepth 2 \( -name brief.md -o -name design.md \) -print -quit)" ] && decision_docs=1
+fi
+[ "$decision_docs" -eq 1 ] && [ "$adrs" = "none yet" ] && warnings="${warnings}
+- Discovery or design documents exist but docs/adr/ has no ADR records: read docs/steering/roadmap.md and the brief.md and design.md files under docs/specs/, then propose one ADR per choice made between real alternatives (adr skill)."
 [ -d "$ROOT/.claude/skills/kiro-spec-init" ] || warnings="${warnings}
 - cc-sdd skills are not installed in this project: run \`npx cc-sdd@latest --claude-skills --kiro-dir docs\`."
 grep -qF -- '<!-- harness-sdlc:project-claude-md -->' "$ROOT/CLAUDE.md" 2>/dev/null || warnings="${warnings}
@@ -33,7 +40,7 @@ ctx="This project uses the SDLC harness (.harness marker present). Guardrail hoo
 Workflow:
 1. Specs with cc-sdd: /kiro-steering, /kiro-discovery, /kiro-spec-init, /kiro-spec-requirements, design, tasks, /kiro-validate-*. Specs live in docs/specs/<feature>/. Do NOT use /kiro-impl or /kiro-spec-batch.
 2. Acceptance criteria must be EARS (ears-spec skill); IDs are REQ-<feature>-<N>.<M>.
-3. Architecture or dependency change: write an ADR in docs/adr/ (adr skill).
+3. Architecture or dependency change: write an ADR in docs/adr/ (adr skill). Also after /kiro-discovery and after each /kiro-spec-design: one ADR per choice made between real alternatives, before ending the turn. cc-sdd never writes ADRs itself.
 4. Execution with superpowers: brainstorming, writing-plans, test-driven-development (one failing test per REQ ID first), subagent-driven-development or executing-plans, requesting-code-review, verification-before-completion.
 Blocking rules: no code edit without superpowers enabled and an EARS spec in docs/specs; malformed EARS criteria are rejected; a turn cannot end with manifest changes and no ADR.
 Current specs: ${specs}

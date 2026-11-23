@@ -41,7 +41,53 @@ workflow_names_discovery() {
   context "$p" | grep -qF '/kiro-discovery' || fail "workflow does not mention /kiro-discovery"
 }
 
+workflow_requires_adr_after_discovery_and_design() {
+  local p; p="$(new_project)"
+  touch "$p/.harness"
+  context "$p" | grep -Eq 'after /kiro-discovery and after each /kiro-spec-design.*ADR' \
+    || fail "workflow does not ask for ADRs after discovery and design"
+}
+
+ADR_WARNING='no ADR records'
+
+warns_when_roadmap_exists_without_adr() {
+  local p; p="$(new_project)"
+  touch "$p/.harness"; mkdir -p "$p/docs/steering" "$p/docs/adr"
+  echo "# Roadmap" > "$p/docs/steering/roadmap.md"
+  context "$p" | grep -qF "$ADR_WARNING" || fail "no warning about missing ADRs"
+}
+
+warns_when_design_exists_without_adr() {
+  local p; p="$(new_project)"
+  touch "$p/.harness"; mkdir -p "$p/docs/specs/my feature"
+  echo "# Design" > "$p/docs/specs/my feature/design.md"
+  context "$p" | grep -qF "$ADR_WARNING" || fail "no warning about missing ADRs"
+}
+
+silent_about_adrs_when_one_exists() {
+  local p; p="$(new_project)"
+  touch "$p/.harness"; mkdir -p "$p/docs/steering" "$p/docs/adr"
+  echo "# Roadmap" > "$p/docs/steering/roadmap.md"
+  echo "# ADR" > "$p/docs/adr/0001-native-only.md"
+  local ctx; ctx="$(context "$p")"
+  [ -n "$ctx" ] || fail "hook produced no context"
+  ! printf '%s' "$ctx" | grep -qF "$ADR_WARNING" || fail "unexpected warning"
+}
+
+silent_about_adrs_before_any_decision_document() {
+  local p; p="$(new_project)"
+  touch "$p/.harness"; mkdir -p "$p/docs/specs" "$p/docs/adr"
+  local ctx; ctx="$(context "$p")"
+  [ -n "$ctx" ] || fail "hook produced no context"
+  ! printf '%s' "$ctx" | grep -qF "$ADR_WARNING" || fail "unexpected warning"
+}
+
 run_case workflow_names_discovery
+run_case workflow_requires_adr_after_discovery_and_design
+run_case warns_when_roadmap_exists_without_adr
+run_case warns_when_design_exists_without_adr
+run_case silent_about_adrs_when_one_exists
+run_case silent_about_adrs_before_any_decision_document
 run_case warns_when_claude_md_lacks_marker
 run_case warns_when_claude_md_missing
 run_case silent_about_claude_md_when_marker_present
