@@ -26,10 +26,12 @@ fi
 warnings=""
 [ -d "$ROOT/.claude/skills/kiro-spec-init" ] || warnings="${warnings}
 - cc-sdd skills are not installed in this project: run \`npx cc-sdd@latest --claude-skills --kiro-dir docs\`."
+grep -qF -- '<!-- harness-sdlc:project-claude-md -->' "$ROOT/CLAUDE.md" 2>/dev/null || warnings="${warnings}
+- CLAUDE.md is missing or was not written by the harness (cc-sdd may have rewritten it): tell the user to run \`templates/install-claude-md.sh\` from their sdlc-harness clone on this project. Until then, the harness workflow above overrides what CLAUDE.md says about /kiro-impl and implementation."
 
 ctx="This project uses the SDLC harness (.harness marker present). Guardrail hooks are active.
 Workflow:
-1. Specs with cc-sdd: /kiro-steering, /kiro-spec-init, /kiro-spec-requirements, design, tasks, /kiro-validate-*. Specs live in docs/specs/<feature>/. Do NOT use /kiro-impl or /kiro-spec-batch.
+1. Specs with cc-sdd: /kiro-steering, /kiro-discovery, /kiro-spec-init, /kiro-spec-requirements, design, tasks, /kiro-validate-*. Specs live in docs/specs/<feature>/. Do NOT use /kiro-impl or /kiro-spec-batch.
 2. Acceptance criteria must be EARS (ears-spec skill); IDs are REQ-<feature>-<N>.<M>.
 3. Architecture or dependency change: write an ADR in docs/adr/ (adr skill).
 4. Execution with superpowers: brainstorming, writing-plans, test-driven-development (one failing test per REQ ID first), subagent-driven-development or executing-plans, requesting-code-review, verification-before-completion.

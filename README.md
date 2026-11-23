@@ -16,7 +16,8 @@ plugins/harness-sdlc/               the plugin (never at the repo root, see "cla
 dotfiles/CLAUDE.md                  global rules (linked to ~/.claude/CLAUDE.md)
 dotfiles/settings.json              global settings template (marketplace + enabled plugins)
 dotfiles/install.sh                 links both files into ~/.claude
-templates/                          per-project settings for iOS and Android
+templates/                          per-project settings for iOS and Android, project CLAUDE.md
+tests/                              bash tests for the setup scripts and hooks
 ```
 
 ## Install on a fresh machine
@@ -52,7 +53,7 @@ The plugin is installed globally, so its hooks run in every project. Each hook f
 
 | Hook | Event | Effect |
 |---|---|---|
-| `session-start.sh` | SessionStart | Signal: injects the workflow and the list of specs and ADRs |
+| `session-start.sh` | SessionStart | Signal: injects the workflow and the list of specs and ADRs; warns when cc-sdd skills or the harness `CLAUDE.md` are missing |
 | `require-superpowers.sh` | PreToolUse (Write/Edit) | **Blocks** code edits while `superpowers@claude-plugins-official` is not enabled |
 | `require-spec.sh` | PreToolUse (Write/Edit) | **Blocks** code edits (tests included) until `docs/specs/` holds a valid EARS criterion |
 | `lint-ears.sh` | PostToolUse (Write/Edit) | **Rejects** a `docs/specs/**.md` file whose acceptance criteria are not EARS |
@@ -64,13 +65,17 @@ Remove `.harness` to turn the guardrails off for a project. Skills stay availabl
 
 ## Add the harness to a project
 
+Every recipe ends with `templates/install-claude-md.sh`. `npx cc-sdd` writes a `CLAUDE.md` that only describes cc-sdd and sends implementation to `/kiro-impl`. The script replaces it with `templates/project.CLAUDE.md`, which keeps the cc-sdd spec phases and hands implementation, debugging, review and verification to superpowers. An existing `CLAUDE.md` that differs from the template is moved to `CLAUDE.md.bak-<timestamp>` first, so nothing is lost, but the installed file is always the template: move anything you still need from the backup into `docs/steering/`, not back into `CLAUDE.md`. The script only runs in a directory that contains `.harness`, and it adds its backups to the project's `.gitignore`. Run the script again whenever cc-sdd is reinstalled or updated: the SessionStart hook warns when the file is no longer the harness one.
+
+Always start Claude Code from the directory that contains `.harness`. Started from a parent directory, Claude Code finds neither `.claude/skills/` (so `/kiro-discovery` is an unknown command) nor the project settings, and the hooks stay silent.
+
 ### iOS
 
 ```bash
 ~/sdlc-harness/templates/ios-setup.sh /path/to/project
 ```
 
-It merges `templates/ios.settings.json` into `.claude/settings.json`, creates `.harness`, `docs/specs/` and `docs/adr/`, and exports Xcode's agent skills with `xcrun agent skills export --output-dir .claude/skills`. Add `--replace-skills` to refresh them after an Xcode update. It then offers to install cc-sdd.
+It merges `templates/ios.settings.json` into `.claude/settings.json`, creates `.harness`, `docs/specs/` and `docs/adr/`, and exports Xcode's agent skills with `xcrun agent skills export --output-dir .claude/skills`. Add `--replace-skills` to refresh them after an Xcode update. It then offers to install cc-sdd and installs the harness `CLAUDE.md`. If the cc-sdd install fails, the rest of the setup still runs and the script exits with an error that gives the command to retry.
 
 ### Android
 
@@ -80,6 +85,7 @@ mkdir -p .claude docs/specs docs/adr
 cp ~/sdlc-harness/templates/android.settings.json .claude/settings.json   # or merge by hand
 touch .harness
 npx cc-sdd@latest --claude-skills --kiro-dir docs
+~/sdlc-harness/templates/install-claude-md.sh .
 ```
 
 The template declares the `android-skills` (`android/skills`) and `android-cli-plugin` (`android/android-cli-plugin`) marketplaces and enables `android-skills@android-skills` and `android-cli@android-cli-plugin`. Claude Code offers to install them when you trust the folder; otherwise run `claude plugin install <plugin>@<marketplace> --scope project`.
@@ -90,13 +96,14 @@ The template declares the `android-skills` (`android/skills`) and `android-cli-p
 touch .harness
 mkdir -p docs/adr
 npx cc-sdd@latest --claude-skills --kiro-dir docs     # specs in docs/specs/, steering in docs/steering/
+~/sdlc-harness/templates/install-claude-md.sh .       # harness CLAUDE.md, replaces the cc-sdd one
 ```
 
-Commit `.harness`, `.claude/settings.json`, the cc-sdd skills and `docs/`.
+Commit `.harness`, `CLAUDE.md`, `.gitignore`, `.claude/settings.json`, the cc-sdd skills and `docs/`. Do not commit the `*.bak-*` backups.
 
 ## Daily workflow
 
-1. `/kiro-steering` once per project, then for each feature `/kiro-spec-init`, `/kiro-spec-requirements` (EARS, IDs `REQ-<feature>-N.M`), design, tasks, `/kiro-validate-*`.
+1. `/kiro-steering` once per project (optional), `/kiro-discovery "idea"` for each new piece of work, then for each feature `/kiro-spec-init`, `/kiro-spec-requirements` (EARS, IDs `REQ-<feature>-N.M`), design, tasks, `/kiro-validate-*`.
 2. Architecture or dependency decision: an ADR in `docs/adr/` (`adr` skill).
 3. superpowers: `writing-plans` from `tasks.md`, `test-driven-development` (one failing test per requirement ID), `subagent-driven-development`, `requesting-code-review`, `verification-before-completion`.
 4. Do not use `/kiro-impl` or `/kiro-spec-batch`.
@@ -125,6 +132,14 @@ A skill whose YAML frontmatter does not parse still loads, but silently loses it
 The `.githooks/pre-commit` hook runs both commands with `--strict`, where warnings count as errors, and refuses the commit if either fails. `install.sh` enables it; on a clone where you did not run `install.sh`, enable it with `git config core.hooksPath .githooks`. Bypass it once with `git commit --no-verify`.
 
 The "plugin directory" findings (license, icon) only concern a submission to Anthropic's public plugin directory. They do not affect the result unless you add `--profile directory`.
+
+### Tests
+
+```bash
+for t in tests/*.test.sh; do "$t" || echo "FAILED: $t"; done
+```
+
+Plain bash, no framework. Each case runs against a temporary project directory whose name contains a space.
 
 ### Shipping a change
 
