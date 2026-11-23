@@ -25,7 +25,7 @@ fi
 
 warnings=""
 [ -d "$ROOT/.claude/skills/kiro-spec-init" ] || warnings="${warnings}
-- cc-sdd skills are not installed in this project: run \`npx cc-sdd@latest --kiro-dir docs\`."
+- cc-sdd skills are not installed in this project: run \`npx cc-sdd@latest --claude-skills --kiro-dir docs\`."
 
 ctx="This project uses the SDLC harness (.harness marker present). Guardrail hooks are active.
 Workflow:

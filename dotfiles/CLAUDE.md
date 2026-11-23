@@ -30,7 +30,7 @@ These rules apply to every project. Project `CLAUDE.md` files may add to them.
 | Planning the implementation | superpowers `writing-plans`, fed by `docs/specs/<feature>/tasks.md` |
 | Implementation, TDD, review, verification | superpowers |
 
-- cc-sdd is installed per project with `npx cc-sdd@latest --kiro-dir docs`, so specs live in `docs/specs/<feature>/` and steering in `docs/steering/`.
+- cc-sdd is installed per project with `npx cc-sdd@latest --claude-skills --kiro-dir docs`, so specs live in `docs/specs/<feature>/` and steering in `docs/steering/`.
 - Never use `/kiro-impl` or `/kiro-spec-batch`: implementation belongs to superpowers.
 - Each acceptance criterion has the ID `REQ-<feature>-<N>.<M>` (requirement N, criterion M). Every ID gets at least one test that carries it in its name, written before the code.
 

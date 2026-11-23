@@ -79,7 +79,7 @@ cd /path/to/project
 mkdir -p .claude docs/specs docs/adr
 cp ~/sdlc-harness/templates/android.settings.json .claude/settings.json   # or merge by hand
 touch .harness
-npx cc-sdd@latest --kiro-dir docs
+npx cc-sdd@latest --claude-skills --kiro-dir docs
 ```
 
 The template declares the `android-skills` (`android/skills`) and `android-cli-plugin` (`android/android-cli-plugin`) marketplaces and enables `android-skills@android-skills` and `android-cli@android-cli-plugin`. Claude Code offers to install them when you trust the folder; otherwise run `claude plugin install <plugin>@<marketplace> --scope project`.
@@ -89,7 +89,7 @@ The template declares the `android-skills` (`android/skills`) and `android-cli-p
 ```bash
 touch .harness
 mkdir -p docs/adr
-npx cc-sdd@latest --kiro-dir docs     # specs in docs/specs/, steering in docs/steering/
+npx cc-sdd@latest --claude-skills --kiro-dir docs     # specs in docs/specs/, steering in docs/steering/
 ```
 
 Commit `.harness`, `.claude/settings.json`, the cc-sdd skills and `docs/`.

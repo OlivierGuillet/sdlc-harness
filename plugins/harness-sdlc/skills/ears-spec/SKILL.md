@@ -12,7 +12,7 @@ harness enforces so that every requirement is mechanically checkable and
 transposable into tests.
 
 Specs live in `docs/specs/<feature>/requirements.md` (cc-sdd installed with
-`npx cc-sdd@latest --kiro-dir docs`).
+`npx cc-sdd@latest --claude-skills --kiro-dir docs`).
 
 ## Rule 1: every acceptance criterion is a valid EARS sentence
 

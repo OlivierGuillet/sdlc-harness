@@ -8,7 +8,7 @@
 # - creates the .harness marker, docs/specs/ and docs/adr/
 # - exports Xcode's agent skills into <project>/.claude/skills
 #   (xcrun agent skills export)
-# - offers to install cc-sdd skills (npx cc-sdd@latest --kiro-dir docs)
+# - offers to install cc-sdd skills (npx cc-sdd@latest --claude-skills --kiro-dir docs)
 
 set -euo pipefail
 
@@ -60,11 +60,11 @@ fi
 
 # 4. cc-sdd
 if [ "$CC_SDD" -eq 1 ] && [ ! -d "$PROJECT/.claude/skills/kiro-spec-init" ]; then
-  printf 'Install cc-sdd skills now (npx cc-sdd@latest --kiro-dir docs)? [y/N] '
+  printf 'Install cc-sdd skills now (npx cc-sdd@latest --claude-skills --kiro-dir docs)? [y/N] '
   read -r answer || answer=""
   case "$answer" in
-    y|Y|yes) (cd "$PROJECT" && npx cc-sdd@latest --kiro-dir docs) ;;
-    *) echo "skipped: run 'npx cc-sdd@latest --kiro-dir docs' in the project later" ;;
+    y|Y|yes) (cd "$PROJECT" && npx cc-sdd@latest --claude-skills --kiro-dir docs) ;;
+    *) echo "skipped: run 'npx cc-sdd@latest --claude-skills --kiro-dir docs' in the project later" ;;
   esac
 fi
 

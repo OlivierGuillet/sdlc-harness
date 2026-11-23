@@ -12,4 +12,4 @@ while IFS= read -r f; do
   done < <(spec_criteria "$f")
 done < <(spec_files)
 
-deny_tool "harness: no EARS requirement found in docs/specs/. Write the spec first with cc-sdd (/kiro-spec-init then /kiro-spec-requirements, installed with 'npx cc-sdd@latest --kiro-dir docs'), following the ears-spec skill, before editing ${rel}. Tests count as code: TDD starts from the requirement IDs."
+deny_tool "harness: no EARS requirement found in docs/specs/. Write the spec first with cc-sdd (/kiro-spec-init then /kiro-spec-requirements, installed with 'npx cc-sdd@latest --claude-skills --kiro-dir docs'), following the ears-spec skill, before editing ${rel}. Tests count as code: TDD starts from the requirement IDs."
