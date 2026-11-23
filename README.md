@@ -39,7 +39,10 @@ What `install.sh` does:
 - backs up any existing `~/.claude/CLAUDE.md` and `~/.claude/settings.json` to `~/.claude/backups/harness-<timestamp>/`;
 - links `~/.claude/CLAUDE.md` to `dotfiles/CLAUDE.md`;
 - builds `dotfiles/settings.generated.json` (git-ignored) from `dotfiles/settings.json`. It replaces `${HARNESS_ROOT}` with the clone's path and deep-merges the result over your current settings, so personal keys survive. It then links `~/.claude/settings.json` to that file;
+- enables this repository's versioned git hooks (`git config core.hooksPath .githooks`);
 - never touches `~/.claude.json`.
+
+The template also carries the status line (directory, git branch, model, context usage), so it follows you to every machine.
 
 The versioned `dotfiles/settings.json` stays machine-independent: the absolute path required by a `directory` marketplace source only exists in the generated file. Re-run `install.sh` after moving the clone or editing the template. Changes Claude Code writes to `~/.claude/settings.json` land in the generated file and are kept by the merge.
 
@@ -110,9 +113,25 @@ The plugin lives in `plugins/harness-sdlc/`, not at the repo root, so the reposi
 
 ## Development
 
+### Validation
+
 ```bash
-claude plugin validate .
-claude plugin validate plugins/harness-sdlc
+claude plugin validate .                     # marketplace: .claude-plugin/marketplace.json and each plugin entry
+claude plugin validate plugins/harness-sdlc  # plugin: plugin.json, SKILL.md frontmatter, hooks/hooks.json
 ```
 
-Bump `version` in `plugins/harness-sdlc/.claude-plugin/plugin.json`, then run `claude plugin marketplace update harness` and `claude plugin update harness-sdlc@harness`.
+A skill whose YAML frontmatter does not parse still loads, but silently loses its name and description, so it never triggers. Only the validator catches this.
+
+The `.githooks/pre-commit` hook runs both commands with `--strict`, where warnings count as errors, and refuses the commit if either fails. `install.sh` enables it; on a clone where you did not run `install.sh`, enable it with `git config core.hooksPath .githooks`. Bypass it once with `git commit --no-verify`.
+
+The "plugin directory" findings (license, icon) only concern a submission to Anthropic's public plugin directory. They do not affect the result unless you add `--profile directory`.
+
+### Shipping a change
+
+- **Now (local `directory` marketplace).** Claude Code reads the plugin straight from this clone (`claude plugin list` shows `Read from: <clone>/plugins/harness-sdlc`). Edits to skills, hooks or scripts apply to the next session: no update command and no version bump needed. Changes to `dotfiles/settings.json` need `dotfiles/install.sh` again.
+- **Later (GitHub or claude.ai marketplace).** Installed plugins are cached by version. Bump `version` in `plugins/harness-sdlc/.claude-plugin/plugin.json`, push, then run on each machine:
+
+  ```bash
+  claude plugin marketplace update <marketplace>
+  claude plugin update harness-sdlc@<marketplace>
+  ```

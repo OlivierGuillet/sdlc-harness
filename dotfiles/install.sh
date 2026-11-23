@@ -86,6 +86,12 @@ run ln -sfn "$GENERATED" "$CLAUDE_DIR/settings.json"
 
 echo "linked       : $CLAUDE_DIR/CLAUDE.md -> $DOTFILES/CLAUDE.md"
 echo "linked       : $CLAUDE_DIR/settings.json -> $GENERATED"
+
+# 3. Versioned git hooks for this repository (pre-commit runs plugin validation)
+if git -C "$HARNESS_ROOT" rev-parse --git-dir >/dev/null 2>&1; then
+  run git -C "$HARNESS_ROOT" config core.hooksPath .githooks
+  echo "git hooks    : core.hooksPath=.githooks"
+fi
 echo
 echo "Next: claude plugin marketplace add \"$HARNESS_ROOT\""
 echo "      claude plugin install harness-sdlc@harness"
