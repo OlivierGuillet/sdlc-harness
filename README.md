@@ -103,10 +103,49 @@ Commit `.harness`, `CLAUDE.md`, `.gitignore`, `.claude/settings.json`, the cc-sd
 
 ## Daily workflow
 
-1. `/kiro-steering` once per project (optional), `/kiro-discovery "idea"` for each new piece of work, then for each feature `/kiro-spec-init`, `/kiro-spec-requirements` (EARS, IDs `REQ-<feature>-N.M`), design, tasks, `/kiro-validate-*`.
-2. Architecture or dependency decision: an ADR in `docs/adr/` (`adr` skill). cc-sdd never writes ADRs, so the project `CLAUDE.md` and the SessionStart hook ask for one ADR per choice made between real alternatives after `/kiro-discovery` and after each `/kiro-spec-design`. This is an instruction, not a blocking hook; the hook also warns when discovery or design documents exist and `docs/adr/` is empty.
-3. superpowers: `writing-plans` from `tasks.md`, `test-driven-development` (one failing test per requirement ID), `subagent-driven-development`, `requesting-code-review`, `verification-before-completion`.
-4. Do not use `/kiro-impl` or `/kiro-spec-batch`.
+The harness chains three phases after setup: specification with cc-sdd, architecture decisions, execution with superpowers. Each step leaves a deliverable in the repository.
+
+### 1. Specification (cc-sdd)
+
+| Step | Command | Deliverables |
+|---|---|---|
+| Steering (optional, once per project) | `/kiro-steering`, `/kiro-steering-custom` | `docs/steering/product.md`, `tech.md`, `structure.md`, plus any custom steering file |
+| Discovery (each new piece of work) | `/kiro-discovery "idea"` | `docs/steering/roadmap.md` and one `docs/specs/<feature>/brief.md` per spec |
+| Spec init | `/kiro-spec-init` | `docs/specs/<feature>/spec.json` and a `requirements.md` skeleton |
+| Requirements | `/kiro-spec-requirements <feature>` | `requirements.md` with EARS acceptance criteria |
+| Gap analysis (optional, existing code) | `/kiro-validate-gap <feature>` | `research.md` |
+| Design | `/kiro-spec-design <feature>` | `design.md` and `research.md` |
+| Design review (optional) | `/kiro-validate-design <feature>` | a verdict in the conversation, no file |
+| Task breakdown | `/kiro-spec-tasks <feature>` | `tasks.md` |
+| Progress (any time) | `/kiro-spec-status <feature>` | a status report, no file |
+
+- You approve requirements, design and tasks one phase at a time.
+- The `lint-ears` hook rejects a `requirements.md` whose acceptance criteria are not EARS.
+- Requirement IDs are not written in `requirements.md`. They are derived from cc-sdd's numbering: `### Requirement 2`, criterion `3.` of the `login` spec is `REQ-login-2.3`. `tasks.md` refers to it as `_Requirements: 2.3_`, and tests carry the full ID in their name. Never renumber a requirement or a criterion once a test cites it.
+
+### 2. Architecture decisions
+
+| When | Tool | Deliverables |
+|---|---|---|
+| After `/kiro-discovery` and after each `/kiro-spec-design` | `harness-sdlc:adr` skill | `docs/adr/NNNN-title.md`, one per choice made between real alternatives, `Proposed` until you accept it |
+| Whenever a build manifest changes | same skill, enforced by the `require-adr` hook | a new or updated ADR |
+
+cc-sdd never writes ADRs. The first row is an instruction given by the project `CLAUDE.md` and the SessionStart hook, not a blocking hook; the SessionStart hook also warns when discovery or design documents exist and `docs/adr/` is empty.
+
+### 3. Execution (superpowers)
+
+| Step | Skill | Deliverables |
+|---|---|---|
+| Designing anything new | `brainstorming` | `docs/superpowers/specs/<date>-<topic>-design.md` |
+| Implementation plan | `writing-plans`, fed by `tasks.md` | `docs/superpowers/plans/<date>-<feature>.md` |
+| Implementation | `test-driven-development`, with `subagent-driven-development` or `executing-plans` | tests (at least one per requirement ID, written before the code), the code, the boxes ticked in `tasks.md` |
+| Bug or failing test | `systematic-debugging` | the root cause, a test that reproduces it, the fix |
+| Review | `requesting-code-review`, `receiving-code-review` | an independent reviewer's report and the fixes |
+| Verification | `verification-before-completion` | the test and build output that proves the result |
+| Wrap-up | `finishing-a-development-branch` | the merged branch or a pull request |
+
+- Two hooks guard this phase: no code edit while superpowers is not enabled, and none until `docs/specs/` holds a valid EARS criterion.
+- Do not use `/kiro-impl` or `/kiro-spec-batch`. cc-sdd installs them, but this phase replaces them.
 
 ## Moving to a claude.ai marketplace later
 
